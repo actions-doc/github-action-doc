@@ -27,10 +27,8 @@ pub struct GithubAction {
 
 impl GithubAction {
     pub fn parse(path: &String) -> Result<GithubAction, Box<dyn std::error::Error>> {
-        // println!("Opening: {}", p);
         let f = File::open(path).unwrap();
         let action: GithubAction = serde_yaml::from_reader(f)?;
-        println!("{}", action);
         Ok(action)
     }
 
@@ -74,11 +72,11 @@ impl GithubAction {
             Some(inputs) => {
                 let mut mdown = String::new();
 
-                writeln!(mdown, "| Output | Description |").unwrap();
-                writeln!(mdown, "|:-------|:------------|").unwrap();
+                mdown.push_str(&format!("| {:18} | {:18} |\n", "Output", "Description"));
+                mdown.push_str(&format!("| {:-<18} | {:-<18} |\n", ":", ":"));
 
                 for (name, output) in inputs {
-                    mdown.push_str(&format!("| {} | {} |", name, output.description));
+                    mdown.push_str(&format!("| {:18} | {:18} |", name, output.description));
                 }
 
                 return mdown;
