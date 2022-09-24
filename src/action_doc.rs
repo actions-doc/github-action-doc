@@ -7,6 +7,7 @@ use serde::{Deserialize};
 pub struct GithubActionInput {
     description: String,
     default: Option<String>,
+    #[serde(default)]
     required: bool
 }
 
@@ -33,21 +34,32 @@ impl GithubAction {
         Ok(action)
     }
 
+    fn clean(s: String) -> String {
+        return s.trim()
+            .replace("-", "‑")
+            .replace(" ", " ")
+    }
+
     fn inputs_to_markdown(inputs: Option<HashMap<String, GithubActionInput>>) -> String {
         match inputs {
             Some(inputs) => {
                 let mut mdown = String::new();
 
-                mdown.push_str("| Input | Description | Required | Default Value |\n");
-                mdown.push_str("| :---- | :---------- | :------- |:--------------|\n");
+                mdown.push_str("| Input                | Description | Required | Default Value |\n");
+                mdown.push_str("| :------------------- | :---------- | :------- |:--------------|\n");
 
                 for (name, input) in inputs {
                     let input_default = match input.default {
                         Some(x) => x,
                         None => " ".to_string()
                     };
-                    writeln!(mdown, "| {} | {} | {} | {} |",
-                             name, input.description, input.required, input_default
+                    writeln!(mdown, "| {:18} | {} | {} | {} |",
+                             Self::clean(name),
+                             input.description.replace("\n", "<br>"),
+                             match input.required {
+                                 true => "yes", false => "no"
+                             },
+                             Self::clean(input_default)
                     ).unwrap();
                 }
 
