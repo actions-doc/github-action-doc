@@ -48,15 +48,13 @@ impl GithubAction {
 
                 for (name, input) in inputs {
                     let input_default = match input.default {
-                        Some(x) => x,
+                        Some(x) => format!("`{}`", x),
                         None => " ".to_string()
                     };
                     writeln!(mdown, "| {:18} | {} | {} | {} |",
                              Self::clean(name),
                              input.description.replace("\n", "<br>"),
-                             match input.required {
-                                 true => "yes", false => "no"
-                             },
+                             match input.required { true => "yes", false => "no" },
                              Self::clean(input_default)
                     ).unwrap();
                 }
@@ -92,10 +90,10 @@ impl GithubAction {
         mdown += &self.description;
 
         mdown += "\n\n## Inputs\n";
-        mdown += &GithubAction::inputs_to_markdown(self.inputs);
+        mdown += &Self::inputs_to_markdown(self.inputs);
 
         mdown += "\n## Outputs\n\n";
-        mdown += &GithubAction::outputs_to_markdown(self.outputs);
+        mdown += &Self::outputs_to_markdown(self.outputs);
 
         return mdown
     }
