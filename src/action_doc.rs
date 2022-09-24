@@ -1,8 +1,6 @@
 use std::collections::HashMap;
-use std::fmt::{Formatter};
-use std::fmt::Write;
+use std::fmt::{Formatter, Write};
 use std::fs::File;
-use std::path::Path;
 use serde::{Deserialize};
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -28,9 +26,8 @@ pub struct GithubAction {
 
 impl GithubAction {
     pub fn parse(path: &String) -> Result<GithubAction, Box<dyn std::error::Error>> {
-        let p = Path::new(path).join("action.yml");
         // println!("Opening: {}", p);
-        let f = File::open(p).unwrap();
+        let f = File::open(path).unwrap();
         let action: GithubAction = serde_yaml::from_reader(f)?;
         println!("{}", action);
         Ok(action)
@@ -41,8 +38,8 @@ impl GithubAction {
             Some(inputs) => {
                 let mut mdown = String::new();
 
-                writeln!(mdown, "| Input | Description | Required | Default Value |").unwrap();
-                writeln!(mdown, "| :---- | :---------- | :------- |:--------------|").unwrap();
+                mdown.push_str("| Input | Description | Required | Default Value |\n");
+                mdown.push_str("| :---- | :---------- | :------- |:--------------|\n");
 
                 for (name, input) in inputs {
                     let input_default = match input.default {
@@ -66,10 +63,10 @@ impl GithubAction {
                 let mut mdown = String::new();
 
                 writeln!(mdown, "| Output | Description |").unwrap();
-                writeln!(mdown, "| :----- | :----------- |").unwrap();
+                writeln!(mdown, "|:-------|:------------|").unwrap();
 
                 for (name, output) in inputs {
-                    writeln!(mdown, "| {} | {} |", name, output.description).unwrap();
+                    mdown.push_str(&format!("| {} | {} |", name, output.description));
                 }
 
                 return mdown;
@@ -77,31 +74,25 @@ impl GithubAction {
             None => "No outputs.".to_string()
         }
     }
-    pub fn to_markdown(self) -> String {
-        let mut  mdown = String::new();
 
-        writeln!(mdown, "# {}", self.name).unwrap();
-        writeln!(mdown).unwrap();
+    pub fn to_markdown(self) -> String {
+        let mut mdown = String::new();
+
+        mdown += &format!("# {}\n\n", self.name);
         mdown += &self.description;
 
-        writeln!(mdown).unwrap();
-        writeln!(mdown).unwrap();
-        writeln!(mdown, "## Inputs").unwrap();
-        writeln!(mdown).unwrap();
-        writeln!(mdown, "{}", GithubAction::inputs_to_markdown(self.inputs)).unwrap();
+        mdown += "\n\n## Inputs\n";
+        mdown += &GithubAction::inputs_to_markdown(self.inputs);
 
-        writeln!(mdown).unwrap();
-        writeln!(mdown, "## Outputs").unwrap();
-        writeln!(mdown).unwrap();
-        writeln!(mdown, "{}", GithubAction::outputs_to_markdown(self.outputs)).unwrap();
+        mdown += "\n## Outputs\n\n";
+        mdown += &GithubAction::outputs_to_markdown(self.outputs);
 
         return mdown
     }
-
 }
 
 impl std::fmt::Display for GithubAction {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(name: {}, description: {})", self.name, self.description)
+        write!(f, "(name: {}, description: {})", self.name, self.description.trim())
     }
 }
