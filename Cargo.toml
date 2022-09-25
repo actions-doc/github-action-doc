@@ -16,5 +16,6 @@ path = "src/main.rs"
 [dependencies]
 clap = { version = "3.2.22", features = ["derive"] }
 heck = "0.4.0"
+indoc = "1.0.7"
 serde = { version = "1.0.145", features = ["derive"] }
 serde_yaml = "0.9.13"
