@@ -1,5 +1,8 @@
+extern crate core;
+
 mod cli;
 mod action_doc;
+mod markdown;
 mod workflow_docs;
 
 use std::fs;
