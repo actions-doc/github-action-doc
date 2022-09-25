@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Formatter};
 use indoc::indoc;
 use serde::{Deserialize};
+use crate::markdown::{backtick, Markdown};
 use super::inputs::{GithubWorkflowInput, GithubWorkflowSecret};
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -37,25 +38,23 @@ impl std::fmt::Display for GithubWorkflowTrigger {
 impl GithubWorkflowTriggerPayload {
 
     fn doc_pull_request(&self) -> String {
-        let mut mdown = format!("### Pull Request\n\n");
+        let mut doc = Markdown::new();
 
-        if self.branches.is_empty() {
-            mdown.push_str("Branches: all")
-        } else {
-            mdown.push_str("Branches: ");
-            mdown.push_str(&self.branches.join(", "));
-            mdown.push_str("\n\n");
+        doc.append_line("### Pull Request");
+        doc.append_new_lines(1);
+
+        if !self.branches.is_empty() {
+            doc.append_line("Branches:");
+            doc.append_list(&self.branches);
         }
 
         if !self.paths.is_empty() {
-            mdown.push_str("Paths:\n");
-            for path in &self.paths {
-                mdown.push_str(&format!("* `{}`", path));
-            }
-            mdown.push_str("\n\n")
+            doc.append_line("Paths:");
+            let paths = &self.paths.iter().map(|t| backtick(t)).collect();
+            doc.append_list(paths);
         }
 
-        return mdown;
+        return doc.to_string();
     }
 
     fn doc_workflow_call(&self) -> String {
