@@ -23,9 +23,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         cli::Commands::Workflow { workflow_file} => {
             let workflow = GitHubWorkflow::parse(&workflow_file)
                 .expect("Unable to parse workflow");
-            println!("Parsed workflow: {}", workflow.name);
+            let wf_path = Path::new(&workflow_file).to_path_buf();
+            let readme_path = wf_path
+                .parent()
+                .unwrap()
+                .join(&format!("{}.md", wf_path.file_stem().unwrap().to_str().unwrap()));
 
-            println!("{}", workflow.to_markdown());
+            println!("Writing workflow readme {:?}", &readme_path);
+            fs::write(readme_path.to_str().unwrap(), workflow.to_markdown()).expect("Unable to write readme");
         }
     }
 
