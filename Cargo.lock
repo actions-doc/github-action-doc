@@ -69,6 +69,7 @@ name = "github_action_doc"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "heck",
  "serde",
  "serde_yaml",
 ]
