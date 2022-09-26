@@ -43,4 +43,7 @@ OPTIONS:
 ### Actions
 
 * [`actions/checkout@v3`](https://gist.github.com/foo4u/3935d6d9b41fe92b19077515c7a035e5#file-checkout_readme-md)
-* [`actions/setup-java@v3](https://gist.github.com/foo4u/3935d6d9b41fe92b19077515c7a035e5#file-setup_java_jdk_readme-md)
+* [`actions/setup-java@v3`](https://gist.github.com/foo4u/3935d6d9b41fe92b19077515c7a035e5#file-setup_java_jdk_readme-md)
+
+[GitHub Actions]: https://docs.github.com/en/actions/learn-github-actions/essential-features-of-github-actions
+[GitHub Workflows]: https://github.com/features/actions
