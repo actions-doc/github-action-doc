@@ -1,44 +1,22 @@
 use std::collections::HashMap;
 use std::fmt::{Formatter, Write};
-use std::fs::File;
-use serde::{Deserialize};
+use crate::github::action::{GithubAction, GithubActionInput, GithubActionOutput};
+use crate::markdown::{Markdown, MarkdownDocumented};
 
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct GithubActionInput {
-    description: String,
-    default: Option<String>,
-    #[serde(default)]
-    required: bool
-}
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct GithubActionOutput {
-    description: String
-}
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct GithubAction {
-    name: String,
-    description: String,
-    author: Option<String>,
-    inputs: Option<HashMap<String, GithubActionInput>>,
-    outputs: Option<HashMap<String, GithubActionOutput>>
+impl MarkdownDocumented for GithubActionOutput {
+    fn to_markdown(&self) -> Markdown {
+        todo!()
+    }
 }
 
 impl GithubAction {
-    pub fn parse(path: &String) -> Result<GithubAction, Box<dyn std::error::Error>> {
-        let f = File::open(path).unwrap();
-        let action: GithubAction = serde_yaml::from_reader(f)?;
-        Ok(action)
-    }
-
-    fn clean(s: String) -> String {
+    fn clean(s: &String) -> String {
         return s.trim()
             .replace("-", "‑")
             .replace(" ", " ")
     }
 
-    fn inputs_to_markdown(inputs: Option<HashMap<String, GithubActionInput>>) -> String {
+    fn inputs_to_markdown(inputs: &Option<HashMap<String, GithubActionInput>>) -> String {
         match inputs {
             Some(inputs) => {
                 let mut mdown = String::new();
@@ -47,7 +25,7 @@ impl GithubAction {
                 mdown.push_str("| :------------------- | :---------- | :------- |:--------------|\n");
 
                 for (name, input) in inputs {
-                    let input_default = match input.default {
+                    let input_default = match &input.default {
                         Some(x) => format!("`{}`", x),
                         None => " ".to_string()
                     };
@@ -55,7 +33,7 @@ impl GithubAction {
                              Self::clean(name),
                              input.description.replace("\n", "<br>"),
                              match input.required { true => "yes", false => "no" },
-                             Self::clean(input_default)
+                             Self::clean(&input_default)
                     ).unwrap();
                 }
 
@@ -65,7 +43,7 @@ impl GithubAction {
         }
     }
 
-    fn outputs_to_markdown(outputs: Option<HashMap<String, GithubActionOutput>>) -> String {
+    fn outputs_to_markdown(outputs: &Option<HashMap<String, GithubActionOutput>>) -> String {
         match outputs {
             Some(inputs) => {
                 let mut mdown = String::new();
@@ -83,19 +61,23 @@ impl GithubAction {
         }
     }
 
-    pub fn to_markdown(self) -> String {
-        let mut mdown = String::new();
+}
 
-        mdown += &format!("# {}\n\n", self.name);
-        mdown += &self.description;
+impl MarkdownDocumented for GithubAction {
+    fn to_markdown(&self) -> Markdown {
+        let mut doc = Markdown::new();
 
-        mdown += "\n\n## Inputs\n";
-        mdown += &Self::inputs_to_markdown(self.inputs);
+        doc.append_heading(&self.name);
 
-        mdown += "\n## Outputs\n\n";
-        mdown += &Self::outputs_to_markdown(self.outputs);
+        doc += &self.description;
 
-        return mdown
+        doc += "\n\n## Inputs\n";
+        doc += &Self::inputs_to_markdown(&self.inputs);
+
+        doc += "\n## Outputs\n\n";
+        doc += &Self::outputs_to_markdown(&self.outputs);
+
+        return doc
     }
 }
 

@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 use std::fmt::{Display, Formatter};
+use std::ops;
 
 pub struct Markdown {
     doc: String
@@ -50,6 +51,25 @@ impl Display for Markdown {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
        f.write_str(&self.doc)
     }
+}
+
+impl ops::Add<&str> for Markdown {
+    type Output = Markdown;
+
+    fn add(mut self, rhs: &str) -> Self::Output {
+        self.append_text(rhs);
+        self
+    }
+}
+
+impl ops::AddAssign<&str> for Markdown {
+    fn add_assign(&mut self, rhs: &str) {
+        self.append_text(rhs)
+    }
+}
+
+pub trait MarkdownDocumented {
+    fn to_markdown(&self) -> Markdown;
 }
 
 pub fn backtick(s: &String) -> String {
