@@ -1,23 +1,5 @@
-use serde::{Deserialize};
+use crate::github::workflow::WorkflowJob;
 use crate::markdown::Markdown;
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct WorkflowJob {
-   pub name: String,
-   pub uses: Option<String>,
-   #[serde(default)]
-   pub needs: Vec<String>,
-   #[serde(default)]
-   pub steps: Vec<WorkflowJobStep>
-}
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct WorkflowJobStep {
-   pub id: Option<String>,
-   pub name: Option<String>,
-   pub run: Option<String>,
-   pub uses: Option<String>
-}
 
 impl WorkflowJob {
    pub fn to_markdown(&self) -> String {

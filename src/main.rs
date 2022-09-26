@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .join(&format!("{}.md", wf_path.file_stem().unwrap().to_str().unwrap()));
 
             println!("Writing workflow readme {:?}", &readme_path);
-            fs::write(readme_path.to_str().unwrap(), workflow.to_markdown()).expect("Unable to write readme");
+            fs::write(readme_path.to_str().unwrap(), workflow.to_markdown().to_string()).expect("Unable to write readme");
         }
     }
 

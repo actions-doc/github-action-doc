@@ -2,11 +2,14 @@
 use std::fmt::{Display, Formatter};
 use std::ops;
 
+// Simple markdown document container.
 pub struct Markdown {
     doc: String
 }
 
 impl Markdown {
+
+    // Returns a new [`Markdown`].
     pub fn new() -> Markdown {
         Markdown { doc: String::new() }
     }

@@ -1,39 +1,7 @@
-use std::collections::HashMap;
-use std::fmt::{Formatter};
 use indoc::indoc;
-use serde::{Deserialize};
 use crate::markdown::{backtick, Markdown};
-use super::inputs::{GithubWorkflowInput, GithubWorkflowSecret};
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct GithubWorkflowTriggerPayload {
-    #[serde(default)]
-    pub branches: Vec<String>,
-    #[serde(default)]
-    pub paths: Vec<String>,
-    #[serde(default)]
-    pub inputs: HashMap<String, GithubWorkflowInput>,
-    #[serde(default)]
-    pub secrets: HashMap<String, GithubWorkflowSecret>
-}
-
-#[derive(Debug, Deserialize, Eq, PartialEq, Hash)]
-pub enum GithubWorkflowTrigger {
-    #[serde(alias = "pull_request")]
-    PullRequest,
-    #[serde(alias = "push")]
-    Push,
-    #[serde(alias = "workflow_call")]
-    WorkflowCall,
-    #[serde(alias = "workflow_dispatch")]
-    WorkflowDispatch
-}
-
-impl std::fmt::Display for GithubWorkflowTrigger {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
+use crate::github::workflow::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload};
+use crate::MarkdownDocumented;
 
 impl GithubWorkflowTriggerPayload {
 
@@ -125,3 +93,9 @@ impl GithubWorkflowTriggerPayload {
         }
     }
 }
+
+// impl MarkdownDocumented for GithubWorkflowTriggerPayload {
+//     fn to_markdown(&self) -> Markdown {
+//         todo!()
+//     }
+// }

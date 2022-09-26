@@ -15,6 +15,7 @@ pub struct GithubActionOutput {
     pub description: String
 }
 
+/// Represents a GitHub action.
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct GithubAction {
     pub name: String,

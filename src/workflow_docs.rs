@@ -1,4 +1,3 @@
-mod inputs;
 mod jobs;
 mod triggers;
 
@@ -6,9 +5,9 @@ use std::collections::HashMap;
 use std::fs::File;
 use heck::ToSnakeCase;
 use serde::{Deserialize};
-use triggers::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload };
-use jobs::WorkflowJob;
+use crate::github::workflow::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload, WorkflowJob };
 use crate::markdown::Markdown;
+use crate::MarkdownDocumented;
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct GitHubWorkflow {
@@ -23,8 +22,10 @@ impl GitHubWorkflow {
         let action: GitHubWorkflow = serde_yaml::from_reader(f)?;
         Ok(action)
     }
+}
 
-    pub fn to_markdown(self) -> String {
+impl MarkdownDocumented for GitHubWorkflow {
+    fn to_markdown(&self) -> Markdown {
         let mut doc = Markdown::new();
 
         doc.append_heading(&self.name);
@@ -45,6 +46,6 @@ impl GitHubWorkflow {
             doc.append_text(&job.to_markdown());
         }
 
-        return doc.to_string();
+        return doc
     }
 }
