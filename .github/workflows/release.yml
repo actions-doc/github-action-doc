@@ -10,12 +10,20 @@ jobs:
   release:
     name: Upload Release Binaries
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-musl
     steps:
       - uses: actions/checkout@v3
       - run: rustup update stable && rustup default stable
-      - run: rustup target add x86_64-unknown-linux-musl
-      - run: cargo build --target x86_64-unknown-linux-musl --release
-      - run: find . -name github-action-doc
+      - run: rustup target add ${{ matrix.target }}
+      - run: cargo build --target ${{ matrix.target }} --release
+      - name: Create Archive
+        working-directory: target/${{ matrix.target }}/release
+        run: |
+          find . -name github-action-doc
+          tar -czf ${{ github.workspace }}/github-action-doc-vFIXME-${{ matrix.target }}.tar.gz github-action-doc
       - name: Upload Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
