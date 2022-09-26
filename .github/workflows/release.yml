@@ -16,4 +16,7 @@ jobs:
       - run: rustup target add x86_64-unknown-linux-musl
       - run: cargo build --target x86_64-unknown-linux-musl --release
       - run: find . -name github-action-doc
-      - run: gh release list
+      - name: Upload Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release list
