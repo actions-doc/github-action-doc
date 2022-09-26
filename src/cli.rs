@@ -16,6 +16,10 @@ pub enum Commands {
     Action {
         #[clap(required = true, value_parser)]
         action_file: String
+    },
+    Workflow {
+        #[clap(required = true, value_parser)]
+        workflow_file: String
     }
 }
 
