@@ -2,6 +2,8 @@ name: Release Artifacts
 
 on:
   pull_request:
+  release:
+    types: [published]
 
 env:
   CARGO_TERM_COLOR: always
@@ -10,6 +12,8 @@ jobs:
   release:
     name: Upload Release Binaries
     runs-on: ubuntu-latest
+    env:
+      TAG_NAME: ${{ github.event_name == 'release' && github.event.release.tag_name || github.sha }}
     strategy:
       matrix:
         target:
@@ -23,8 +27,10 @@ jobs:
         working-directory: target/${{ matrix.target }}/release
         run: |
           find . -name github-action-doc
-          tar -czf ${{ github.workspace }}/github-action-doc-vFIXME-${{ matrix.target }}.tar.gz github-action-doc
+          tar -czf ${{ github.workspace }}/github-action-doc-${TAG_NAME}-${{ matrix.target }}.tar.gz github-action-doc
       - name: Upload Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release list
+        run: |
+          gh release list
+          gh release upload ${TAG_NAME} github-action-doc-${TAG_NAME}-${{ matrix.target }}.tar.gz
