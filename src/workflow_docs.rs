@@ -1,33 +1,10 @@
 mod jobs;
 mod triggers;
 
-use std::collections::HashMap;
-use std::fs::File;
 use heck::ToSnakeCase;
-use serde::{Deserialize};
-use crate::github::workflow::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload, WorkflowJob };
+use crate::github::workflow::{GitHubWorkflow };
 use crate::markdown::Markdown;
 use crate::MarkdownDocumented;
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct GitHubWorkflow {
-    pub name: String,
-    pub on: HashMap<GithubWorkflowTrigger, GithubWorkflowTriggerPayload>,
-    pub jobs: HashMap<String, WorkflowJob>
-}
-
-struct Pair<F, S> {
-    first: F,
-    second: S
-}
-
-impl GitHubWorkflow {
-    pub fn parse(path: &String) -> Result<GitHubWorkflow, Box<dyn std::error::Error>> {
-        let f = File::open(path).unwrap();
-        let action: GitHubWorkflow = serde_yaml::from_reader(f)?;
-        Ok(action)
-    }
-}
 
 impl MarkdownDocumented for GitHubWorkflow {
     fn to_markdown(&self) -> Markdown {
@@ -41,9 +18,8 @@ impl MarkdownDocumented for GitHubWorkflow {
         doc.append_list(trigger_items);
         doc.append_new_lines(1);
 
-        for (trigger, payload) in &self.on {
-            let pair = Pair{ first: trigger, second: payload };
-            doc.append_text(&pair.to_markdown().to_string());
+        for trigger in &self.on {
+            doc.append_text(&trigger.to_markdown().to_string());
         }
 
         // jobs

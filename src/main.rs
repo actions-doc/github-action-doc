@@ -9,7 +9,7 @@ mod workflow_docs;
 use std::fs;
 use std::path::Path;
 use github::action::GithubAction;
-use crate::workflow_docs::GitHubWorkflow;
+use github::workflow::GitHubWorkflow;
 use crate::markdown::MarkdownDocumented;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

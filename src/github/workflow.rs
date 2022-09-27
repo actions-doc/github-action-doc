@@ -1,6 +1,22 @@
 use std::collections::HashMap;
 use std::fmt::Formatter;
+use std::fs::File;
 use serde::{Deserialize};
+
+#[derive(Debug, Deserialize, PartialEq)]
+pub struct GitHubWorkflow {
+    pub name: String,
+    pub on: HashMap<GithubWorkflowTrigger, GithubWorkflowTriggerPayload>,
+    pub jobs: HashMap<String, WorkflowJob>
+}
+
+impl GitHubWorkflow {
+    pub fn parse(path: &String) -> Result<GitHubWorkflow, Box<dyn std::error::Error>> {
+        let f = File::open(path).unwrap();
+        let action: GitHubWorkflow = serde_yaml::from_reader(f)?;
+        Ok(action)
+    }
+}
 
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct GithubWorkflowInput {

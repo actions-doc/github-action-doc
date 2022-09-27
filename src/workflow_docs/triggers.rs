@@ -2,7 +2,6 @@ use indoc::indoc;
 use crate::markdown::{backtick, Markdown};
 use crate::github::workflow::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload};
 use crate::MarkdownDocumented;
-use crate::workflow_docs::Pair;
 
 impl GithubWorkflowTriggerPayload {
 
@@ -99,14 +98,21 @@ impl GithubWorkflowTriggerPayload {
     // }
 }
 
-impl MarkdownDocumented for Pair<&GithubWorkflowTrigger, &GithubWorkflowTriggerPayload> {
+pub trait Pair {
+    type First;
+    type Second;
+    fn split(self) -> (Self::First, Self::Second);
+}
+
+impl MarkdownDocumented for (&GithubWorkflowTrigger, &GithubWorkflowTriggerPayload){
     fn to_markdown(&self) -> Markdown {
-        return match self.first {
+        let (trigger, payload) = self;
+        return match trigger {
             GithubWorkflowTrigger::PullRequest => {
-                self.second.doc_pull_request()
+                payload.doc_pull_request()
             },
             GithubWorkflowTrigger::WorkflowCall => {
-                self.second.doc_workflow_call()
+                payload.doc_workflow_call()
             }
             _ => { Markdown::new() }
         }
