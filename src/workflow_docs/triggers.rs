@@ -84,24 +84,6 @@ impl GithubWorkflowTriggerPayload {
 
         return doc
     }
-
-    // pub fn to_markdown(&self, trigger: &GithubWorkflowTrigger) -> String {
-    //     return match trigger {
-    //         GithubWorkflowTrigger::PullRequest => {
-    //             self.doc_pull_request().to_string()
-    //         },
-    //         GithubWorkflowTrigger::WorkflowCall => {
-    //             self.doc_workflow_call()
-    //         }
-    //         _ => { format!("") }
-    //     }
-    // }
-}
-
-pub trait Pair {
-    type First;
-    type Second;
-    fn split(self) -> (Self::First, Self::Second);
 }
 
 impl MarkdownDocumented for (&GithubWorkflowTrigger, &GithubWorkflowTriggerPayload){
