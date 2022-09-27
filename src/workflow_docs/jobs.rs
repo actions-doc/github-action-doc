@@ -1,8 +1,9 @@
 use crate::github::workflow::WorkflowJob;
 use crate::markdown::Markdown;
+use crate::MarkdownDocumented;
 
-impl WorkflowJob {
-   pub fn to_markdown(&self) -> String {
+impl MarkdownDocumented for WorkflowJob {
+   fn to_markdown(&self) -> Markdown {
       let mut d = Markdown::new();
 
       d.append_text(&format!("### {} ", &self.name));
@@ -39,6 +40,6 @@ impl WorkflowJob {
          d.append_new_lines(1);
       }
 
-      return d.to_string()
+      return d
    }
 }

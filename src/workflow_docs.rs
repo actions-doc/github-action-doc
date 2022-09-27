@@ -16,6 +16,11 @@ pub struct GitHubWorkflow {
     pub jobs: HashMap<String, WorkflowJob>
 }
 
+struct Pair<F, S> {
+    first: F,
+    second: S
+}
+
 impl GitHubWorkflow {
     pub fn parse(path: &String) -> Result<GitHubWorkflow, Box<dyn std::error::Error>> {
         let f = File::open(path).unwrap();
@@ -37,13 +42,14 @@ impl MarkdownDocumented for GitHubWorkflow {
         doc.append_new_lines(1);
 
         for (trigger, payload) in &self.on {
-            doc.append_text(&payload.to_markdown(trigger));
+            let pair = Pair{ first: trigger, second: payload };
+            doc.append_text(&pair.to_markdown().to_string());
         }
 
         // jobs
         doc.append_line("## Jobs\n");
         for (_name, job) in &self.jobs {
-            doc.append_text(&job.to_markdown());
+            doc.append_text(&job.to_markdown().to_string());
         }
 
         return doc

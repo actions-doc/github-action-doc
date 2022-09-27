@@ -2,10 +2,11 @@ use indoc::indoc;
 use crate::markdown::{backtick, Markdown};
 use crate::github::workflow::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload};
 use crate::MarkdownDocumented;
+use crate::workflow_docs::Pair;
 
 impl GithubWorkflowTriggerPayload {
 
-    fn doc_pull_request(&self) -> String {
+    fn doc_pull_request(&self) -> Markdown {
         let mut doc = Markdown::new();
 
         doc.append_line("### Pull Request");
@@ -22,10 +23,10 @@ impl GithubWorkflowTriggerPayload {
             doc.append_list(paths);
         }
 
-        return doc.to_string();
+        return doc
     }
 
-    fn doc_workflow_call(&self) -> String {
+    fn doc_workflow_call(&self) -> Markdown {
         let mut mdown = String::new();
         mdown.push_str(indoc!("
             ### Workflow Call
@@ -78,24 +79,36 @@ impl GithubWorkflowTriggerPayload {
             mdown.push_str("No secrets.")
         }
 
-        return mdown
+        let mut doc = Markdown::new();
+
+        doc.append_text(&mdown);
+
+        return doc
     }
 
-    pub fn to_markdown(&self, trigger: &GithubWorkflowTrigger) -> String {
-        return match trigger {
+    // pub fn to_markdown(&self, trigger: &GithubWorkflowTrigger) -> String {
+    //     return match trigger {
+    //         GithubWorkflowTrigger::PullRequest => {
+    //             self.doc_pull_request().to_string()
+    //         },
+    //         GithubWorkflowTrigger::WorkflowCall => {
+    //             self.doc_workflow_call()
+    //         }
+    //         _ => { format!("") }
+    //     }
+    // }
+}
+
+impl MarkdownDocumented for Pair<&GithubWorkflowTrigger, &GithubWorkflowTriggerPayload> {
+    fn to_markdown(&self) -> Markdown {
+        return match self.first {
             GithubWorkflowTrigger::PullRequest => {
-                self.doc_pull_request()
+                self.second.doc_pull_request()
             },
             GithubWorkflowTrigger::WorkflowCall => {
-                self.doc_workflow_call()
+                self.second.doc_workflow_call()
             }
-            _ => { format!("") }
+            _ => { Markdown::new() }
         }
     }
 }
-
-// impl MarkdownDocumented for GithubWorkflowTriggerPayload {
-//     fn to_markdown(&self) -> Markdown {
-//         todo!()
-//     }
-// }
