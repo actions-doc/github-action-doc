@@ -2,7 +2,7 @@ use clap::{Subcommand};
 use clap::Parser;
 
 #[derive(Debug, Parser)]
-#[clap(name = "github_action_doc")]
+#[clap(name = "github-action-doc")]
 #[clap(about = "A GitHub action & workflow readme writer", long_about = None)]
 pub struct Cli {
     #[clap(subcommand)]
@@ -17,6 +17,8 @@ pub enum Commands {
         #[clap(required = true, value_parser)]
         action_file: String
     },
+    #[clap(arg_required_else_help = true)]
+    #[clap(about = "Generate documentation for a Github workflow", long_about = None)]
     Workflow {
         #[clap(required = true, value_parser)]
         workflow_file: String
