@@ -1,26 +1,9 @@
-use serde::{Deserialize};
+use crate::github::workflow::WorkflowJob;
 use crate::markdown::Markdown;
+use crate::MarkdownDocumented;
 
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct WorkflowJob {
-   pub name: String,
-   pub uses: Option<String>,
-   #[serde(default)]
-   pub needs: Vec<String>,
-   #[serde(default)]
-   pub steps: Vec<WorkflowJobStep>
-}
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct WorkflowJobStep {
-   pub id: Option<String>,
-   pub name: Option<String>,
-   pub run: Option<String>,
-   pub uses: Option<String>
-}
-
-impl WorkflowJob {
-   pub fn to_markdown(&self) -> String {
+impl MarkdownDocumented for WorkflowJob {
+   fn to_markdown(&self) -> Markdown {
       let mut d = Markdown::new();
 
       d.append_text(&format!("### {} ", &self.name));
@@ -57,6 +40,6 @@ impl WorkflowJob {
          d.append_new_lines(1);
       }
 
-      return d.to_string()
+      return d
    }
 }

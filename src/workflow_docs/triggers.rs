@@ -1,43 +1,11 @@
-use std::collections::HashMap;
-use std::fmt::{Formatter};
 use indoc::indoc;
-use serde::{Deserialize};
 use crate::markdown::{backtick, Markdown};
-use super::inputs::{GithubWorkflowInput, GithubWorkflowSecret};
-
-#[derive(Debug, Deserialize, PartialEq)]
-pub struct GithubWorkflowTriggerPayload {
-    #[serde(default)]
-    pub branches: Vec<String>,
-    #[serde(default)]
-    pub paths: Vec<String>,
-    #[serde(default)]
-    pub inputs: HashMap<String, GithubWorkflowInput>,
-    #[serde(default)]
-    pub secrets: HashMap<String, GithubWorkflowSecret>
-}
-
-#[derive(Debug, Deserialize, Eq, PartialEq, Hash)]
-pub enum GithubWorkflowTrigger {
-    #[serde(alias = "pull_request")]
-    PullRequest,
-    #[serde(alias = "push")]
-    Push,
-    #[serde(alias = "workflow_call")]
-    WorkflowCall,
-    #[serde(alias = "workflow_dispatch")]
-    WorkflowDispatch
-}
-
-impl std::fmt::Display for GithubWorkflowTrigger {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
-}
+use crate::github::workflow::{GithubWorkflowTrigger, GithubWorkflowTriggerPayload};
+use crate::MarkdownDocumented;
 
 impl GithubWorkflowTriggerPayload {
 
-    fn doc_pull_request(&self) -> String {
+    fn doc_pull_request(&self) -> Markdown {
         let mut doc = Markdown::new();
 
         doc.append_line("### Pull Request");
@@ -54,10 +22,10 @@ impl GithubWorkflowTriggerPayload {
             doc.append_list(paths);
         }
 
-        return doc.to_string();
+        return doc
     }
 
-    fn doc_workflow_call(&self) -> String {
+    fn doc_workflow_call(&self) -> Markdown {
         let mut mdown = String::new();
         mdown.push_str(indoc!("
             ### Workflow Call
@@ -110,18 +78,25 @@ impl GithubWorkflowTriggerPayload {
             mdown.push_str("No secrets.")
         }
 
-        return mdown
-    }
+        let mut doc = Markdown::new();
 
-    pub fn to_markdown(&self, trigger: &GithubWorkflowTrigger) -> String {
+        doc.append_text(&mdown);
+
+        return doc
+    }
+}
+
+impl MarkdownDocumented for (&GithubWorkflowTrigger, &GithubWorkflowTriggerPayload){
+    fn to_markdown(&self) -> Markdown {
+        let (trigger, payload) = self;
         return match trigger {
             GithubWorkflowTrigger::PullRequest => {
-                self.doc_pull_request()
+                payload.doc_pull_request()
             },
             GithubWorkflowTrigger::WorkflowCall => {
-                self.doc_workflow_call()
+                payload.doc_workflow_call()
             }
-            _ => { format!("") }
+            _ => { Markdown::new() }
         }
     }
 }

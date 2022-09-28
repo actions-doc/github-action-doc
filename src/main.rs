@@ -2,13 +2,15 @@ extern crate core;
 
 mod cli;
 mod action_doc;
+mod github;
 mod markdown;
 mod workflow_docs;
 
 use std::fs;
 use std::path::Path;
-use action_doc::GithubAction;
-use crate::workflow_docs::GitHubWorkflow;
+use github::action::GithubAction;
+use github::workflow::GitHubWorkflow;
+use crate::markdown::MarkdownDocumented;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = cli::parse_args();
@@ -18,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let gha = GithubAction::parse(&action_file)
                 .expect("Unable to parse Github action");
             let readme_path = Path::new(&action_file).to_path_buf().parent().unwrap().join("README.md");
-            fs::write(readme_path.to_str().unwrap(), gha.to_markdown()).expect("Unable to write readme");
+            fs::write(readme_path.to_str().unwrap(), gha.to_markdown().to_string()).expect("Unable to write readme");
         }
         cli::Commands::Workflow { workflow_file} => {
             let workflow = GitHubWorkflow::parse(&workflow_file)
@@ -30,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .join(&format!("{}.md", wf_path.file_stem().unwrap().to_str().unwrap()));
 
             println!("Writing workflow readme {:?}", &readme_path);
-            fs::write(readme_path.to_str().unwrap(), workflow.to_markdown()).expect("Unable to write readme");
+            fs::write(readme_path.to_str().unwrap(), workflow.to_markdown().to_string()).expect("Unable to write readme");
         }
     }
 
