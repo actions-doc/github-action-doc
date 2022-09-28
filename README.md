@@ -15,11 +15,10 @@ USAGE:
     github-action-doc action <ACTION_FILE>
 
 ARGS:
-    <ACTION_FILE>
+    <ACTION_FILE>    Action YAML file
 
 OPTIONS:
     -h, --help    Print help information
-
 ```
 
 ### Documenting GitHub Workflows
@@ -29,13 +28,15 @@ $ github-action-doc workflow -h
 Generate documentation for a Github workflow
 
 USAGE:
-    github-action-doc workflow <WORKFLOW_FILE>
+    github-action-doc workflow [OPTIONS] <WORKFLOW_FILE>
 
 ARGS:
-    <WORKFLOW_FILE>
+    <WORKFLOW_FILE>    Workflow YAML file
 
 OPTIONS:
-    -h, --help    Print help information
+    -h, --help              Print help information
+    -o <OUTPUT_FILE>        Optional path to the output file to write workflow documentation to;
+                            defaults to `<WORKFLOW_FILE>.md`, replacing the YAML file extension
 ```
 
 ## Examples

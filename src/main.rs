@@ -22,14 +22,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let readme_path = Path::new(&action_file).to_path_buf().parent().unwrap().join("README.md");
             fs::write(readme_path.to_str().unwrap(), gha.to_markdown().to_string()).expect("Unable to write readme");
         }
-        cli::Commands::Workflow { workflow_file} => {
+        cli::Commands::Workflow { workflow_file, output_file } => {
             let workflow = GitHubWorkflow::parse(&workflow_file)
                 .expect("Unable to parse workflow");
             let wf_path = Path::new(&workflow_file).to_path_buf();
-            let readme_path = wf_path
-                .parent()
-                .unwrap()
-                .join(&format!("{}.md", wf_path.file_stem().unwrap().to_str().unwrap()));
+            let readme_path = match output_file {
+                Some(out) => { Path::new(&out).to_path_buf() },
+                None => {
+                    wf_path
+                        .parent()
+                        .unwrap()
+                        .join(&format!("{}.md", wf_path.file_stem().unwrap().to_str().unwrap()))
+                }
+            };
 
             println!("Writing workflow readme {:?}", &readme_path);
             fs::write(readme_path.to_str().unwrap(), workflow.to_markdown().to_string()).expect("Unable to write readme");
