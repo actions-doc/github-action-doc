@@ -1,6 +1,6 @@
 [package]
 name = "github_action_doc"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Scott Rossillo <scott@rossillo.net>"]
 edition = "2021"
 keywords = ["cli", "github", "actions"]
