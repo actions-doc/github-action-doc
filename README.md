@@ -35,7 +35,8 @@ ARGS:
 
 OPTIONS:
     -h, --help              Print help information
-    -o <OUTPUT_FILE>        Full with to the output file to write workflow documentation to
+    -o <OUTPUT_FILE>        Optional path to the output file to write workflow documentation to;
+                            defaults to `<WORKFLOW_FILE>.md`, replacing the YAML file extension
 ```
 
 ## Examples

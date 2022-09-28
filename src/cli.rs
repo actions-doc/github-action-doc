@@ -21,7 +21,8 @@ pub enum Commands {
     #[clap(arg_required_else_help = true)]
     #[clap(about = "Generate documentation for a Github workflow", long_about = None)]
     Workflow {
-        /// Full with to the output file to write workflow documentation to
+        /// Optional path to the output file to write workflow documentation to;
+        /// defaults to `<WORKFLOW_FILE>.md`, replacing the YAML file extension.
         #[clap(short = 'o', value_name = "OUTPUT_FILE", value_parser)]
         output_file: Option<String>,
 
